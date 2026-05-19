@@ -4,7 +4,10 @@ from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
 import io
 import os
 
-SCOPES = ["https://www.googleapis.com/auth/drive"]
+SCOPES = [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/spreadsheets.readonly",
+]
 
 
 def get_drive_service():
@@ -12,6 +15,13 @@ def get_drive_service():
         os.getenv("GOOGLE_CREDENTIALS_PATH"), scopes=SCOPES
     )
     return build("drive", "v3", credentials=creds)
+
+
+def get_sheets_service():
+    creds = service_account.Credentials.from_service_account_file(
+        os.getenv("GOOGLE_CREDENTIALS_PATH"), scopes=SCOPES
+    )
+    return build("sheets", "v4", credentials=creds)
 
 
 def descargar_template(template_id: str) -> bytes:

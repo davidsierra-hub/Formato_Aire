@@ -1,3 +1,5 @@
+streamlit
+nest-asyncio
 fastapi
 uvicorn[standard]
 openpyxl
