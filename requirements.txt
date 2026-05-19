@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+openpyxl
+google-auth
+google-api-python-client
+python-dotenv
+httpx

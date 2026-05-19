@@ -1,0 +1,19 @@
+# Credenciales y variables de entorno (NO subir)
+.env
+credentials.json
+*.json
+
+# Archivos de prueba y diagnóstico
+test_run.py
+diagnostico_*.py
+diagnostico_carpeta.py
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Streamlit
+.streamlit/
