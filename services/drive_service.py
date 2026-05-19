@@ -4,10 +4,7 @@ from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
 import io
 import os
 
-SCOPES = [
-    "https://www.googleapis.com/auth/drive",
-    "https://www.googleapis.com/auth/spreadsheets.readonly",
-]
+SCOPES = ["https://www.googleapis.com/auth/drive"]
 
 
 def get_drive_service():
@@ -108,6 +105,19 @@ def obtener_pdf_de_carpeta(folder_id: str) -> bytes | None:
         _, done = downloader.next_chunk()
     buffer.seek(0)
     return buffer.read()
+
+
+def subir_bytes(nombre: str, contenido: bytes, folder_id: str, mimetype: str) -> str:
+    service = get_drive_service()
+    metadata = {"name": nombre, "parents": [folder_id]}
+    media = MediaIoBaseUpload(io.BytesIO(contenido), mimetype=mimetype)
+    file = service.files().create(
+        body=metadata,
+        media_body=media,
+        fields="id",
+        supportsAllDrives=True,
+    ).execute()
+    return file["id"]
 
 
 def subir_pdf(nombre: str, contenido: bytes, folder_id: str) -> str:

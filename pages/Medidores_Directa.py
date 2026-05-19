@@ -6,7 +6,11 @@ from dotenv import load_dotenv
 load_dotenv()
 nest_asyncio.apply()
 
-from services.medidores_directa_service import procesar_medidores_directa
+from services.medidores_directa_service import (
+    procesar_medidores_directa,
+    subir_a_drive,
+    nombre_carpeta_hoy,
+)
 
 st.title("📡 Cumplimiento Regulatorio — Medidores Directa")
 st.markdown(
@@ -16,6 +20,14 @@ st.markdown(
 
 st.divider()
 
+st.markdown("#### 1. Hoja Líneas de BD_Telemedida")
+st.markdown(
+    "Descarga la hoja **Líneas** de [BD_Telemedida](https://docs.google.com/spreadsheets/d/1Kd2-PaJ8zKrIfMVjFkFruVmsqCqJKMHgtXAN-EiwD9w/edit#gid=501444082) "
+    "como Excel y súbela aquí. *(Archivo → Descargar → Microsoft Excel)*"
+)
+lineas_file = st.file_uploader("Archivo Líneas (.xlsx)", type=["xlsx"])
+
+st.markdown("#### 2. Seriales")
 seriales_input = st.text_area(
     "Seriales (uno por línea)",
     height=200,
@@ -32,7 +44,7 @@ seriales = parse_seriales(seriales_input)
 if seriales:
     st.caption(f"{len(seriales)} serial(es) detectado(s)")
 
-if st.button("Generar archivos", type="primary", disabled=not seriales):
+if st.button("Generar archivos", type="primary", disabled=not seriales or not lineas_file):
     with st.status("Procesando medidores directa...", expanded=True) as status:
         try:
             loop = asyncio.get_event_loop()
@@ -40,7 +52,9 @@ if st.button("Generar archivos", type="primary", disabled=not seriales):
             st.write("🔍 Consultando WMS General por seriales...")
             st.write("📡 Obteniendo IPs disponibles de BD_Telemedida...")
 
-            resultado = loop.run_until_complete(procesar_medidores_directa(seriales))
+            resultado = loop.run_until_complete(
+                procesar_medidores_directa(seriales, lineas_file)
+            )
 
             st.write(f"✅ {resultado['seriales_encontrados']} serial(es) encontrado(s) en WMS")
 
@@ -63,10 +77,24 @@ if st.button("Generar archivos", type="primary", disabled=not seriales):
             else:
                 st.write("⚠️ Certificado de Conformidad no disponible en WMS")
 
-            status.update(label="¡Archivos listos para descargar!", state="complete")
+            # Upload to Drive
+            st.write(f"📁 Subiendo a Drive — carpeta **{nombre_carpeta_hoy()}**...")
+            drive_url = subir_a_drive(
+                resultado["excel"],
+                resultado["conformidad"],
+                resultado["pdfs_calibracion"],
+            )
+            st.write(f"✅ Archivos subidos a Drive")
+
+            status.update(label="¡Listo! Archivos generados y subidos a Drive.", state="complete")
 
             st.divider()
-            st.subheader("📥 Descarga los 3 archivos del correo")
+
+            col_drive, _ = st.columns([1, 2])
+            with col_drive:
+                st.link_button("📂 Abrir carpeta en Drive", drive_url, use_container_width=True)
+
+            st.subheader("📥 Descarga local")
 
             col1, col2, col3 = st.columns(3)
 
