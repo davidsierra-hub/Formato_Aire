@@ -4,6 +4,10 @@ fastapi
 uvicorn[standard]
 openpyxl
 google-auth
+google-auth-oauthlib
 google-api-python-client
 python-dotenv
 httpx
+pypdf
+pymupdf
+pillow
