@@ -2,7 +2,7 @@
 Script de autorización OAuth para Gmail — correr UNA SOLA VEZ.
 
 Genera `gmail_token.json` con un refresh token para que la app pueda crear
-borradores en Gmail como operaciones@bia.app sin más interacción.
+borradores en Gmail como david.sierra@bia.app sin más interacción.
 
 Requisitos previos:
   1. Tener `oauth_client.json` en este mismo directorio (descargado desde
@@ -12,7 +12,7 @@ Requisitos previos:
 Uso:
     python authorize_gmail.py
 
-Se abrirá una ventana del navegador. Inicia sesión con `operaciones@bia.app`
+Se abrirá una ventana del navegador. Inicia sesión con `david.sierra@bia.app`
 y otorga los permisos. Al cerrar el flujo, se crea `gmail_token.json` y la
 app ya puede crear borradores.
 """
@@ -28,6 +28,7 @@ from google.oauth2.credentials import Credentials
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.compose",
     "https://www.googleapis.com/auth/gmail.settings.basic",
+    "https://www.googleapis.com/auth/gmail.readonly",  # leer sent + threads para bot seguimiento
 ]
 CLIENT_SECRET = "oauth_client.json"
 TOKEN_FILE    = "gmail_token.json"
@@ -59,7 +60,7 @@ def main() -> None:
             creds = None
 
     if not creds:
-        print("🌐 Abriendo navegador para autorización. Inicia sesión con operaciones@bia.app…")
+        print("🌐 Abriendo navegador para autorización. Inicia sesión con david.sierra@bia.app…")
         flow  = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET, SCOPES)
         creds = flow.run_local_server(port=0)
 

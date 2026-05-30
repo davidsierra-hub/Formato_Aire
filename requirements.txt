@@ -8,6 +8,9 @@ google-auth-oauthlib
 google-api-python-client
 python-dotenv
 httpx
+slack-bolt
+slack-sdk
+apscheduler
 pypdf
 pymupdf
 pillow
